@@ -15,6 +15,14 @@ const db = low(adapter);
 app.use(express.json());
 app.use(cors());
 
+app.post('/setstatus', function(req, res) {
+  const body = req.body;
+  db.set(`status`, body.status).write();
+  res.send({
+    result: '操作成功',
+  });
+});
+
 app.get('/status', function(req, res) {
   res.send({
     result: db.get('status'),
@@ -29,6 +37,15 @@ app.get('/detail', function(req, res) {
 
 app.post('/vote', function(req, res) {
   const requestData = req.body;
+  const sssss = db.get(`status`).value();
+
+  if (sssss !== '0') {
+    res.send({
+      error: {
+        message: '投票已关闭',
+      },
+    });
+  }
 
   let result;
   try {
